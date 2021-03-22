@@ -1,0 +1,28 @@
+FROM centos:latest
+
+## install esp-idf depedencies
+RUN dnf update -y && \
+	dnf install epel-release -y && \
+	dnf install 'dnf-command(config-manager)' -y && \
+	dnf config-manager --set-enabled powertools -y && \
+	dnf update -y && \
+	dnf install gcc gcc-c++ glibc-devel make which git wget flex bison gperf python38 cmake ninja-build ccache -y && \
+	dnf clean all
+
+# fix python links
+RUN cd /usr/bin && ln -s python3 python
+
+# get esp-idf
+RUN mkdir /esp && cd /esp && git clone -b v4.2 --recursive https://github.com/espressif/esp-idf.git
+
+# set up tools
+RUN cd /esp/esp-idf/ && ./install.sh
+
+# set up env vars
+RUN source /esp/esp-idf/export.sh
+
+# clone micropython
+RUN cd /esp && git clone https://github.com/micropython/micropython
+
+# hacker stuff
+RUN sed -i '/find_package/s/Python3 //' /esp/micropython/py/mkrules.cmake && find /esp/micropython/ -type f -name '*.py' | xargs chmod 744 && find /esp/micropython/ -type f -name '*.py' | xargs sed -i '1s,^,#!/usr/bin/python3\n,'
