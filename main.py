@@ -10,7 +10,7 @@ def get_pump(mws2, request):
 def post_pump(msw2, request):
     data = request.GetPostedJSONObject()
     try:
-        action = data['action']
+        action = data['status']
     except:
         request.Response.ReturnBadRequest()
         return
