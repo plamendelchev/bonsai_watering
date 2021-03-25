@@ -1,28 +1,33 @@
 from MicroWebSrv2 import *
-from machine import Pin
+from app import Pump
+#from machine import Pin
 import time
+
+#pin = Pin(23, Pin.OUT)
+pump = Pump(pin=23)
+
+mws2 = MicroWebSrv2()
+mws2.SetEmbeddedConfig()
+mws2.StartManaged()
 
 @WebRoute(GET, '/pump')
 def get_pump(mws2, request):
-    request.Response.ReturnOkJSON({'status': pin.value()})
+    #request.Response.ReturnOkJSON({'status': pin.value()})
+    request.Response.ReturnOkJSON(pump.status)
 
 @WebRoute(POST, '/pump')
 def post_pump(msw2, request):
     data = request.GetPostedJSONObject()
     try:
-        action = data['status']
-    except:
+        status = data['status']
+    except KeyError:
         request.Response.ReturnBadRequest()
         return
 
-    pin.value(int(action))
-    request.Response.ReturnOkJSON({'status': pin.value()})
+    pump.status = int(status)
 
-
-pin = Pin(23, Pin.OUT)
-mws2 = MicroWebSrv2()
-mws2.SetEmbeddedConfig()
-mws2.StartManaged()
+    #request.Response.ReturnOkJSON({'status': pin.value()})
+    request.Response.ReturnOkJSON(pump.status)
 
 # Main program loop until keyboard interrupt
 try:
@@ -32,7 +37,5 @@ except KeyboardInterrupt:
     pass
 
 # End
-print()
 mws2.Stop()
 print('Bye')
-print()
