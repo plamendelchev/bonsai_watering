@@ -8,7 +8,7 @@ def post_pump(msw2, request):
     try:
         pump.status = int(data['status'])
     except KeyError:
-        request.Response.ReturnBadRequest()
+        request.ResponseReturnJSON(400, {'error': 'Incorrect post data'})
         return
 
     request.Response.ReturnOkJSON(pump.status)
