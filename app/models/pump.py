@@ -10,7 +10,8 @@ class Pump:
 
     @property
     def status(self):
-        return self._pin.value()
+        return {'status': self._pin.value()}
 
-    @status.setter(self, value):
+    @status.setter
+    def status(self, value):
         self._pin.value(value)
