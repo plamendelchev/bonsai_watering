@@ -12,4 +12,4 @@ def do_connect(ssid, password):
             pass
     print('network config:', wlan.ifconfig())
 
-do_connect(ssid='gosho', password='P1am3n4o97')
+do_connect(ssid='XXXX', password='XXXX')
