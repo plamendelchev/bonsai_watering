@@ -1,3 +1,2 @@
-.ampy
-boot.py
+esp32/boot.py
 __pycache__
