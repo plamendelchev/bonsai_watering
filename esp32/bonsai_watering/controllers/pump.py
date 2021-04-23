@@ -1,4 +1,4 @@
-from app.common import server, pump, mws2
+from bonsai_watering.common import server, pump, mws2
 
 @mws2.WebRoute(mws2.GET, '/pump')
 def get_pump(server, request):

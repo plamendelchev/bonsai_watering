@@ -1,7 +1,7 @@
 import time
 
-from app.common import pump, server, scheduler
-import app.controllers
+from bonsai_watering.common import pump, server, scheduler
+import bonsai_watering.controllers
 
 def create_application():
     # 
