@@ -1,14 +1,7 @@
 import time
 
-import MicroWebSrv2 as mws2
-
-from .scheduler import Scheduler
-from app.models import Pump
-
-
-pump = Pump(pin=23)
-scheduler = Scheduler()
-server = mws2.MicroWebSrv2()
+from app.common import pump, server, scheduler
+import app.controllers
 
 def create_application():
     # 
@@ -34,10 +27,5 @@ def schedule_jobs(scheduler):
     scheduler.schedule(water_plants, at='12:44')
 
 def initialize_server(server):
-    from app.controllers import get_pump, post_pump
-
-    mws2.RegisterRoute(get_pump, mws2.GET, '/pump')
-    mws2.RegisterRoute(post_pump, mws2.POST, '/pump')
-
     server.SetEmbeddedConfig()
     server.StartManaged()

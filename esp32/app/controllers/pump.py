@@ -1,9 +1,11 @@
-from app import mws2, pump
+from app.common import server, pump, mws2
 
-def get_pump(mws2, request):
+@mws2.WebRoute(mws2.GET, '/pump')
+def get_pump(server, request):
     request.Response.ReturnOkJSON(pump.status)
 
-def post_pump(msw2, request):
+@mws2.WebRoute(mws2.POST, '/pump')
+def post_pump(server, request):
     data = request.GetPostedJSONObject()
     try:
         pump.status = int(data['status'])
