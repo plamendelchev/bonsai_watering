@@ -1,10 +1,8 @@
-from bonsai_watering.common import server, pump, mws2
+from bonsai_watering import pump
 
-@mws2.WebRoute(mws2.GET, '/pump')
 def get_pump(server, request):
     request.Response.ReturnOkJSON(pump.status)
 
-@mws2.WebRoute(mws2.POST, '/pump')
 def post_pump(server, request):
     data = request.GetPostedJSONObject()
     try:
