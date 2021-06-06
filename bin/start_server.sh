@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-rshell repl '~ import app ~ app.create_application()'
+rshell repl '~ import bonsai_watering ~ bonsai_watering.create_application()'

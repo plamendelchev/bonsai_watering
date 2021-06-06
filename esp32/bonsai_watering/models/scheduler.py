@@ -4,8 +4,8 @@ class Scheduler:
     def __init__(self):
         self.scheduled_jobs = []
 
-    def schedule(self, function, at):
-        job = Job(function, at)
+    def schedule(self,job , at, **kwargs):
+        job = Job(job, at, **kwargs)
 
         self.scheduled_jobs.append(job)
 
@@ -17,9 +17,10 @@ class Scheduler:
                 job()
 
 class Job:
-    def __init__(self, job, at):
+    def __init__(self, job, at, **kwargs):
         self.job = job
         self.at = at
+        self.args = kwargs
 
     @property
     def at(self):
@@ -62,6 +63,6 @@ class Job:
 
     def __call__(self):
         # Execute job
-        self.job()
+        self.job(**self.args)
         # Update Day to tomorrow
         self._tomorrow()
