@@ -4,10 +4,10 @@ import MicroWebSrv2 as mws2
 
 from bonsai_watering.models import Pump, Scheduler
 
+""" create pump """
 pump = Pump(pin=23)
 
 def create_application():
-    """ create pump """
 
     """ create and configure an instance of a MicroWebSrv2 """
     server = mws2.MicroWebSrv2()
@@ -20,10 +20,11 @@ def create_application():
     mws2.RegisterRoute(post_pump, mws2.POST, '/pump')
 
     """ schedule jobs """
-    scheduler = Scheduler()
-
     from bonsai_watering.jobs import water_plants
-    scheduler.schedule(job=water_plants, at='00:57', pump=pump, duration=10)
+
+    scheduler = Scheduler()
+    scheduler.schedule(job=water_plants, at='20:15', pump=pump, duration=10)
+    scheduler.schedule(job=water_plants, at='20:16', pump=pump, duration=5)
 
     """ start web server instance """
     server.StartManaged()
@@ -35,4 +36,4 @@ def create_application():
             time.sleep(2)
     except KeyboardInterrupt:
         server.Stop()
-        print('Bye')
+        server.Log('Byee', server.DEBUG)

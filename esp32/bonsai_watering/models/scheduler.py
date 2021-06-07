@@ -10,43 +10,57 @@ class Scheduler:
         self.scheduled_jobs.append(job)
 
     def run_scheduled(self):
-        now = utime.localtime()[1:-3]
+        now = DateTime.now()
 
         for job in self.scheduled_jobs:
             if job.at == now:
-                job()
+                job.run()
+                server.Log(job, server.DEBUG)
+
 
 class Job:
     def __init__(self, job, at, **kwargs):
         self.job = job
-        self.at = at
+        self.at = DateTime(at)
         self.args = kwargs
 
-    @property
-    def at(self):
-        return tuple(self._at)
+    def __repr__(self):
+        return '{}(job={}, at={}, args={})'.format(self.__class__.__name__, self.job, self.at, self.args)
 
-    @at.setter
-    def at(self, value):
-        self._at = self._validate_time(value)
+    def __call__(self):
+        self.run()
 
-    def _validate_time(self, at):
-        hour = at.split(':')
+    def run(self):
+        # Execute job
+        self.job(**self.args)
 
-        # list only with month, day, hour and minute
-        time = list(utime.localtime()[1:-3])
-        # set hour:minute to the provided one
-        time[2:] = [int(i) for i in hour]
+        # Update Day to tomorrow
+        self.at = DateTime.tomorrow(self.at)
+
+
+class DateTime:
+    def __new__(cls, hour=str):
+        '''hour is in the format "12:00"'''
+
+        hour_minute = hour.split(':')
+        time = DateTime.now()
+        time[2:] = [int(i) for i in hour_minute]
 
         return time
 
-    def _tomorrow(self):
+    @staticmethod
+    def now():
+        return list(utime.localtime()[1:-3])
+
+    @staticmethod
+    def tomorrow(date_time):
         # (4, 22, 11, 30)
-        month, day = self._at[:2]
+        month, day = date_time[:2]
 
         if (day == 31 and month in (1, 3, 5, 7, 8, 10, 12) or
             day == 30 and month in (4, 6, 9, 11) or
             day in (28, 29) and month == 2):
+
             # update day
             day = 1
 
@@ -59,10 +73,6 @@ class Job:
         else:
             day += 1
 
-        self._at[:2] = month, day
+        date_time[:2] = month, day
 
-    def __call__(self):
-        # Execute job
-        self.job(**self.args)
-        # Update Day to tomorrow
-        self._tomorrow()
+        return date_time
