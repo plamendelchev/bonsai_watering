@@ -1,4 +1,10 @@
 import utime
+import ujson
+
+#from bonsai_watering import logger
+from . import Logger
+
+logger = Logger()
 
 class Scheduler:
     def __init__(self):
@@ -9,23 +15,38 @@ class Scheduler:
 
         self.scheduled_jobs.append(job)
 
+        return job
+
     def run_scheduled(self):
         now = DateTime.now()
 
         for job in self.scheduled_jobs:
             if job.at == now:
                 job.run()
-                server.Log(job, server.DEBUG)
+                #server.Log(job, server.DEBUG)
+                logger.append(date=now, job=job.to_string())
 
 
 class Job:
     def __init__(self, job, at, **kwargs):
         self.job = job
-        self.at = DateTime(at)
         self.args = kwargs
+        #self.at = DateTime(at)
+
+        # Schedule job for tomorrow if the hour has already passed for today
+        dt = DateTime(at)
+
+        if dt[2] < DateTime.now()[2]:
+            self.at = DateTime.tomorrow(dt)
+        else:
+            self.at = dt
+
+    def to_string(self):
+        return {'name': self.job.__name__, 'at': {'m': self.at[0], 'd': self.at[1], 'h': self.at[2], 'min': self.at[3]}, 'args': self.args}
 
     def __repr__(self):
-        return '{}(job={}, at={}, args={})'.format(self.__class__.__name__, self.job, self.at, self.args)
+        #return '{}(job={}, at={}, args={})'.format(self.__class__.__name__, self.job, self.at, self.args)
+        return ujson.dumps({'job': self.job.__name__, 'at': {'m': self.at[0], 'd': self.at[1], 'h': self.at[2], 'min': self.at[3]}, 'args': self.args})
 
     def __call__(self):
         self.run()
@@ -43,7 +64,7 @@ class DateTime:
         '''hour is in the format "12:00"'''
 
         hour_minute = hour.split(':')
-        time = DateTime.now()
+        time = DateTime.now() # maybe cls.now()
         time[2:] = [int(i) for i in hour_minute]
 
         return time

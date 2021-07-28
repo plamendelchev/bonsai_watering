@@ -1,3 +1,3 @@
-from bonsai_watering import create_application
+import bonsai_watering
 
-#create_application()
+bonsai_watering.create_application()
