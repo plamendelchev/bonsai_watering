@@ -30,9 +30,8 @@ def create_application():
     """ schedule jobs """
     from bonsai_watering.jobs import water_plants
 
-    scheduler.schedule(job=water_plants, at='07:00', pump=pump, duration=40)
-    scheduler.schedule(job=water_plants, at='16:00', pump=pump, duration=20)
-    scheduler.schedule(job=water_plants, at='20:00', pump=pump, duration=20)
+    scheduler.schedule(job=water_plants, at='07:00', pump=pump, duration=35)
+    scheduler.schedule(job=water_plants, at='18:00', pump=pump, duration=20)
 
     """ set up web server"""
     server.SetEmbeddedConfig()
@@ -43,7 +42,7 @@ def create_application():
     try:
         while server.IsRunning:
             scheduler.run_scheduled()
-            time.sleep(30)
+            time.sleep(25)
     except KeyboardInterrupt:
         server.Stop()
         server.Log('Byee', server.DEBUG)

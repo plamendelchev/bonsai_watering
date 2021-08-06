@@ -1,8 +1,11 @@
 import esp
+import network
+import machine
+import ntptime
+
 esp.osdebug(None)
 
 def do_connect(ssid, password):
-    import network
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     if not wlan.isconnected():
@@ -12,4 +15,20 @@ def do_connect(ssid, password):
             pass
     print('network config:', wlan.ifconfig())
 
-do_connect(ssid='XXXX', password='XXXX')
+def set_ntp_time():
+    try:
+        ntptime.settime()
+
+        rtc = machine.RTC()
+        current_time = list(rtc.datetime())
+        current_time[4] += 3
+
+        rtc.datetime(current_time)
+    except OSError:
+        print('Unable to set time. ')
+
+
+wifi_cred = {'ssid': '', 'password': ''}
+
+do_connect(**wifi_cred)
+set_ntp_time()

@@ -10,7 +10,7 @@ class DateTime:
 
     @property
     def time(self):
-        return (self.hour, self.minutes)
+        return (self.day, self.hour, self.minutes)
 
     @classmethod
     def now(cls):
