@@ -1,52 +1,52 @@
-import utime
-import ujson
-
 #from bonsai_watering import logger
-from . import Logger
+from . import Logger, DateTime
 
 logger = Logger()
 
 class Scheduler:
     def __init__(self):
-        self.scheduled_jobs = []
+        self._scheduled_jobs = []
+
+    @property
+    def scheduled_jobs(self):
+        return [job.all_attributes for job in self._scheduled_jobs]
 
     def schedule(self,job , at, **kwargs):
         job = Job(job, at, **kwargs)
-
-        self.scheduled_jobs.append(job)
+        self._scheduled_jobs.append(job)
 
         return job
 
     def run_scheduled(self):
-        now = DateTime.now()
-
-        for job in self.scheduled_jobs:
-            if job.at == now:
+        for job in self._scheduled_jobs:
+            if job.at.time == DateTime.now().time:
                 job.run()
                 #server.Log(job, server.DEBUG)
-                logger.append(date=now, job=job.to_string())
+                #logger.append(date=now, job=job.__repr__())
 
 
 class Job:
     def __init__(self, job, at, **kwargs):
         self.job = job
         self.args = kwargs
-        #self.at = DateTime(at)
 
-        # Schedule job for tomorrow if the hour has already passed for today
-        dt = DateTime(at)
+        # parse `at` ('12:00') into a datetime valid value
+        dt_at = DateTime.parse(at)
 
-        if dt[2] < DateTime.now()[2]:
-            self.at = DateTime.tomorrow(dt)
+        # check if job should be rescheduled for tomorrow
+        if dt_at.time < DateTime.now().time:
+            self.at = dt_at
+            self.at.tomorrow()
         else:
-            self.at = dt
+            self.at = dt_at
 
-    def to_string(self):
-        return {'name': self.job.__name__, 'at': {'m': self.at[0], 'd': self.at[1], 'h': self.at[2], 'min': self.at[3]}, 'args': self.args}
-
-    def __repr__(self):
-        #return '{}(job={}, at={}, args={})'.format(self.__class__.__name__, self.job, self.at, self.args)
-        return ujson.dumps({'job': self.job.__name__, 'at': {'m': self.at[0], 'd': self.at[1], 'h': self.at[2], 'min': self.at[3]}, 'args': self.args})
+    @property
+    def all_attributes(self):
+        return {
+            'job': self.job.__name__,
+            'at': ['{}/{}'.format(self.at.day, self.at.month), '{}:{}'.format(self.at.hour, self.at.minutes)],
+            'args': {'pump': self.args['pump'].all_attributes, 'duration': self.args['duration']}  ## THIS IS NOT OK
+        }
 
     def __call__(self):
         self.run()
@@ -56,44 +56,4 @@ class Job:
         self.job(**self.args)
 
         # Update Day to tomorrow
-        self.at = DateTime.tomorrow(self.at)
-
-
-class DateTime:
-    def __new__(cls, hour=str):
-        '''hour is in the format "12:00"'''
-
-        hour_minute = hour.split(':')
-        time = DateTime.now() # maybe cls.now()
-        time[2:] = [int(i) for i in hour_minute]
-
-        return time
-
-    @staticmethod
-    def now():
-        return list(utime.localtime()[1:-3])
-
-    @staticmethod
-    def tomorrow(date_time):
-        # (4, 22, 11, 30)
-        month, day = date_time[:2]
-
-        if (day == 31 and month in (1, 3, 5, 7, 8, 10, 12) or
-            day == 30 and month in (4, 6, 9, 11) or
-            day in (28, 29) and month == 2):
-
-            # update day
-            day = 1
-
-            # update month
-            if month == 12:
-                month = 1
-            else:
-                month += 1
-
-        else:
-            day += 1
-
-        date_time[:2] = month, day
-
-        return date_time
+        self.at.tomorrow()

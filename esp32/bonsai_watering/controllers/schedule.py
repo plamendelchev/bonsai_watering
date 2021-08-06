@@ -8,7 +8,8 @@ def get_schedule(server, request):
 def post_schedule(server, request):
     '''
     POST /schedule
-    expected json data -> {"job": "water_plants", "at": "12:00", "pump": "pump", "duration": 10} '''
+    expected json data -> {"job": "water_plants", "at": "12:00", "pump": "pump", "duration": 10}
+    '''
 
     data = request.GetPostedJSONObject()
 
@@ -21,4 +22,4 @@ def post_schedule(server, request):
         request.Response.ReturnJSON(400, {'error': str(err)})
         return
     else:
-        request.Response.ReturnOkJSON(job)
+        request.Response.ReturnOkJSON(job.all_attributes)

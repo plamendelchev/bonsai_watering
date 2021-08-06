@@ -1,4 +1,3 @@
-import ujson
 from machine import Pin
 
 class Pump:
@@ -14,6 +13,9 @@ class Pump:
     def status(self, value):
         self.pin.value(value)
 
+    @property
+    def all_attributes(self):
+        return {'pin': self._pin_num, 'status': self.status}
+
     def __repr__(self):
-        #return '{}(pin={}, status={})'.format(self.__class__.__name__, self._pin_num, self.status)
-        return ujson.dumps({'pin': self._pin_num, 'status': self.status})
+        return {'pin': self._pin_num, 'status': self.status}

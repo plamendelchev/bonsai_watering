@@ -11,6 +11,6 @@ def post_time(server, request):
     try:
         rtc.datetime(tuple(data))
     except ValueError:
-        request.ResponseReturnJSON(400, {'error': 'Incorrect datetime format'})
+        request.Response.ReturnJSON(400, {'error': 'Incorrect datetime format'})
         return
     request.Response.ReturnOkJSON({'datetime': rtc.datetime()})
