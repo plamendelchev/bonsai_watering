@@ -31,6 +31,9 @@ RUN source /esp/esp-idf/export.sh && \
   git -C /esp/ clone -b v1.16 https://github.com/micropython/micropython && \ 
   git -C /esp/micropython/ checkout v1.16
 
+# clone webrepl
+RUN git -C /esp/ clone https://github.com/micropython/webrepl
+
 # build micropython cross-compiler
 RUN source /esp/esp-idf/export.sh && \ 
   make -C /esp/micropython/mpy-cross && \
