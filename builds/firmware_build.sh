@@ -2,8 +2,8 @@
 
 source GLOBALS # Introduces $VERSION $PACKAGES
 
-# Build firmware
-docker build -t centos8-micropython_"$VERSION":firmware -f ./docker-files/Dockerfile_firmware . &&
+# Build image
+docker build -t centos8-micropython_"$VERSION":firmware -f ./docker-files/firmware.Dockerfile . &&
 
 # Start container
 docker create --name mitko centos8-micropython_"$VERSION":firmware &&
