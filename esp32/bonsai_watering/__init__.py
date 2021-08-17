@@ -13,6 +13,7 @@ def create_application():
     """ main function and entry point to the package """
 
     """ register web routes """
+    # from bonsai_watering import controllers
     import bonsai_watering.controllers as controllers
 
     mws2.RegisterRoute(controllers.get_pump, mws2.GET, '/pump')
@@ -20,6 +21,7 @@ def create_application():
 
     mws2.RegisterRoute(controllers.get_schedule, mws2.GET, '/schedule')
     mws2.RegisterRoute(controllers.post_schedule, mws2.POST, '/schedule')
+    mws2.RegisterRoute(controllers.delete_schedule, mws2.DELETE, '/schedule/<id>')
 
     mws2.RegisterRoute(controllers.get_time, mws2.GET, '/time')
     mws2.RegisterRoute(controllers.post_time, mws2.POST, '/time')

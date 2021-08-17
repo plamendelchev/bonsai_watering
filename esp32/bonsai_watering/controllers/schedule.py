@@ -17,9 +17,21 @@ def post_schedule(server, request):
         job = scheduler.schedule(job=eval(data['job']), at=data['at'], pump=eval(data['pump']), duration=data['duration'])
     except (KeyError, TypeError):
         request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
-        return
     except NameError as err:
         request.Response.ReturnJSON(400, {'error': str(err)})
-        return
     else:
         request.Response.ReturnOkJSON(job.all_attributes)
+
+    return
+
+def delete_schedule(server, request, args):
+    ''' DELETE /schedule/<id> '''
+
+    try:
+        job = scheduler.unschedule(args['id'])
+    except (IndexError, TypeError):
+        request.Response.ReturnJSON(400, {'error': 'Invalid id'})
+    else:
+        request.Response.ReturnOkJSON(job)
+
+    return

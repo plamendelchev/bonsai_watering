@@ -17,6 +17,10 @@ class Scheduler:
 
         return job
 
+    def unschedule(self, id):
+        job = self._scheduled_jobs.pop(id)
+        return(job.all_attributes)
+
     def run_scheduled(self):
         for job in self._scheduled_jobs:
             if job.at.time == DateTime.now().time:
