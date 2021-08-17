@@ -16,6 +16,5 @@ def post_pump(server, request):
         pump.status = int(data['status'])
     except KeyError:
         request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
-        return
     else:
         request.Response.ReturnOkJSON(pump.all_attributes)

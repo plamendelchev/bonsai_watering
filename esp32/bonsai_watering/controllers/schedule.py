@@ -24,8 +24,6 @@ def post_schedule(server, request):
     else:
         request.Response.ReturnOkJSON(job.all_attributes)
 
-    #return
-
 def update_schedule(server, request, args):
     ''' PUT /schedule/<id> '''
 
@@ -52,5 +50,3 @@ def delete_schedule(server, request, args):
         request.Response.ReturnJSON(400, {'error': 'Invalid id'})
     else:
         request.Response.ReturnOkJSON(job)
-
-    #return
