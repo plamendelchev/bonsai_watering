@@ -27,22 +27,43 @@ class Scheduler:
                 job.run()
                 #server.Log(job, server.DEBUG)
 
+    def get_job(self, id):
+        return self._scheduled_jobs[id]
+
+    def update_job(self, id, data):
+        job = self.get_job(id=id)
+
+        for attr, value in data.items():
+            if not hasattr(job, attr):
+                raise AttributeError(attr)
+            setattr(job, attr, value)
+
+        self._scheduled_jobs[id] = job
+        return job
+
 
 class Job:
     def __init__(self, id, job, at, **kwargs):
         self.id = id
         self.job = job
         self.args = kwargs
+        self.at = at
 
-        # parse `at` ('12:00') into a datetime valid value
-        dt_at = DateTime.parse(at)
+    @property
+    def at(self):
+        return self._at
+
+    @at.setter
+    def at(self, value):
+        # parse `value` ('12:00') into a datetime valid format
+        dt_at = DateTime.parse(value)
 
         # check if job should be rescheduled for tomorrow
         if dt_at.time < DateTime.now().time:
-            self.at = dt_at
-            self.at.tomorrow()
+            self._at = dt_at
+            self._at.tomorrow()
         else:
-            self.at = dt_at
+            self._at = dt_at
 
     @property
     def all_attributes(self):
@@ -50,7 +71,9 @@ class Job:
             'id': self.id,
             'job': self.job.__name__,
             'at': ['{:02d}/{:02d}'.format(self.at.day, self.at.month), '{:02d}:{:02d}'.format(self.at.hour, self.at.minutes)],
-            'args': {'pump': self.args['pump'].all_attributes, 'duration': self.args['duration']}  ## THIS IS NOT OK
+            #'args': {'pump': self.args['pump'].all_attributes, 'duration': self.args['duration']}  ## THIS IS NOT OK
+            'pump': self.args['pump'].pin,
+            'duration': self.args['duration']
         }
 
     def __call__(self):

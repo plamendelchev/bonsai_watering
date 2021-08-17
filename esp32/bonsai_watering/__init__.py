@@ -21,6 +21,7 @@ def create_application():
     # /schedule
     mws2.RegisterRoute(controllers.get_schedule, mws2.GET, '/schedule')
     mws2.RegisterRoute(controllers.post_schedule, mws2.POST, '/schedule')
+    mws2.RegisterRoute(controllers.update_schedule, mws2.PUT, '/schedule/<id>')
     mws2.RegisterRoute(controllers.delete_schedule, mws2.DELETE, '/schedule/<id>')
 
     # /time
