@@ -1,7 +1,5 @@
 from bonsai_watering import pump
 
-import bonsai_watering.views as views
-
 def get_pump(server, request):
     ''' GET /pump '''
     request.Response.ReturnOkJSON(pump.all_attributes)

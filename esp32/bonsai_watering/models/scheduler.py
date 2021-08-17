@@ -1,10 +1,8 @@
-#from bonsai_watering import logger
-from . import Logger, DateTime
-
-logger = Logger()
+from . import DateTime
 
 class Scheduler:
     def __init__(self):
+        self.current_id = 0
         self._scheduled_jobs = []
 
     @property
@@ -12,8 +10,10 @@ class Scheduler:
         return [job.all_attributes for job in self._scheduled_jobs]
 
     def schedule(self,job , at, **kwargs):
-        job = Job(job, at, **kwargs)
+        job = Job(self.current_id, job, at, **kwargs)
+
         self._scheduled_jobs.append(job)
+        self.current_id += 1
 
         return job
 
@@ -22,11 +22,11 @@ class Scheduler:
             if job.at.time == DateTime.now().time:
                 job.run()
                 #server.Log(job, server.DEBUG)
-                #logger.append(date=now, job=job.__repr__())
 
 
 class Job:
-    def __init__(self, job, at, **kwargs):
+    def __init__(self, id, job, at, **kwargs):
+        self.id = id
         self.job = job
         self.args = kwargs
 
@@ -43,8 +43,9 @@ class Job:
     @property
     def all_attributes(self):
         return {
+            'id': self.id,
             'job': self.job.__name__,
-            'at': ['{}/{}'.format(self.at.day, self.at.month), '{}:{}'.format(self.at.hour, self.at.minutes)],
+            'at': ['{:02d}/{:02d}'.format(self.at.day, self.at.month), '{:02d}:{:02d}'.format(self.at.hour, self.at.minutes)],
             'args': {'pump': self.args['pump'].all_attributes, 'duration': self.args['duration']}  ## THIS IS NOT OK
         }
 

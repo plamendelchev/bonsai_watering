@@ -2,10 +2,9 @@ import time
 
 import MicroWebSrv2 as mws2
 
-from bonsai_watering.models import Logger, Pump, Scheduler
+from bonsai_watering.models import Pump, Scheduler
 
 """ create package instances"""
-logger = Logger()
 server = mws2.MicroWebSrv2()
 pump = Pump(pin=23)
 scheduler = Scheduler()
@@ -25,13 +24,13 @@ def create_application():
     mws2.RegisterRoute(controllers.get_time, mws2.GET, '/time')
     mws2.RegisterRoute(controllers.post_time, mws2.POST, '/time')
 
-    mws2.RegisterRoute(controllers.get_logs, mws2.GET, '/logs')
+    mws2.RegisterRoute(controllers.get_webrepl, mws2.GET, '/webrepl')
 
     """ schedule jobs """
     from bonsai_watering.jobs import water_plants
 
-    scheduler.schedule(job=water_plants, at='07:00', pump=pump, duration=35)
-    scheduler.schedule(job=water_plants, at='18:00', pump=pump, duration=20)
+    scheduler.schedule(job=water_plants, at='07:00', pump=pump, duration=28)
+    scheduler.schedule(job=water_plants, at='18:00', pump=pump, duration=17)
 
     """ set up web server"""
     server.SetEmbeddedConfig()
