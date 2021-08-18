@@ -1,5 +1,4 @@
-from bonsai_watering import pump, scheduler
-from bonsai_watering.jobs import water_plants
+from bonsai_watering import scheduler
 
 def get_schedule(server, request):
     ''' GET /schedule '''
@@ -8,16 +7,14 @@ def get_schedule(server, request):
 def post_schedule(server, request):
     '''
     POST /schedule
-    expected json data -> {"job": "water_plants", "at": "12:00", "pump": "pump", "duration": 10}
-
-    TODO -> Change ("pump": "pump") to ("pump": 23) // reference by pin num, instead of instance name
+    expected json data -> {"job": "water_plants", "at": "12:00", "device": "pump", "duration": 10}
     '''
 
     data = request.GetPostedJSONObject()
 
     try:
-        job = scheduler.schedule(job=eval(data['job']), at=data['at'], pump=eval(data['pump']), duration=data['duration'])
-    except (KeyError, TypeError):
+        job = scheduler.schedule(**data)
+    except (KeyError, TypeError, SyntaxError):
         request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
     except NameError as err:
         request.Response.ReturnJSON(400, {'error': str(err)})

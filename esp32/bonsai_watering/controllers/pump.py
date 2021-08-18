@@ -1,8 +1,8 @@
-from bonsai_watering import pump
+from bonsai_watering import devices
 
 def get_pump(server, request):
     ''' GET /pump '''
-    request.Response.ReturnOkJSON(pump.all_attributes)
+    request.Response.ReturnOkJSON(devices.pump.all_attributes)
 
 def post_pump(server, request):
     '''
@@ -13,8 +13,8 @@ def post_pump(server, request):
     data = request.GetPostedJSONObject()
 
     try:
-        pump.status = int(data['status'])
+        devices.pump.status = int(data['status'])
     except KeyError:
         request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
     else:
-        request.Response.ReturnOkJSON(pump.all_attributes)
+        request.Response.ReturnOkJSON(devices.pump.all_attributes)
