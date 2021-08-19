@@ -1,8 +1,9 @@
 from bonsai_watering import models
 
-pump = models.Pump(pin=23)
+pump = models.Pump(name='pump', pin=23)
+pump2 = models.Pump(name='pump2', pin=25)
 
-devices = {'pump': pump}
+devices = [pump, pump2]
 
 def get(device_name):
-    return devices[device_name]
+    return next(device for device in devices if device.name == device_name)

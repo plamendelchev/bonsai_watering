@@ -3,39 +3,28 @@ from bonsai_watering import jobs, devices
 
 class Scheduler:
     def __init__(self):
-        self.current_id = 1
-        self._scheduled_jobs = []
-
-    @property
-    def scheduled_jobs(self):
-        return [job.all_attributes for job in self._scheduled_jobs]
+        self.current_id = 0
+        self.scheduled_jobs = []
 
     def schedule(self, job, at, device, **kwargs):
-        # retrieve func from job list
-        job_func = jobs.get(job) # raises KeyError if job is not found
+        job = Job(self.current_id, job, at, device, **kwargs)
 
-        # retrieve device from device list 
-        device_inst = devices.get(device) # raises KeyError if device is not found
-
-        job = Job(self.current_id, job_func, at, device_inst, **kwargs)
-
-        self._scheduled_jobs.append(job)
+        self.scheduled_jobs.append(job)
         self.current_id += 1
 
         return job
 
     def unschedule(self, id):
-        job = self._scheduled_jobs.pop(id)
-        return(job.all_attributes)
+        job = next(job for job in self.scheduled_jobs if job.id == id)
+        self.scheduled_jobs.remove(job)
+        return job
 
     def run_scheduled(self):
-        for job in self._scheduled_jobs:
+        for job in self.scheduled_jobs:
             job.run()
-#            if job.at.time == DateTime.now().time:
-#                job.run()
 
     def get_job(self, id):
-        return self._scheduled_jobs[id]
+        return self.scheduled_jobs[id]
 
     def update_job(self, id, data):
         job = self.get_job(id=id)
@@ -45,7 +34,7 @@ class Scheduler:
                 raise AttributeError(attr)
             setattr(job, attr, value)
 
-        self._scheduled_jobs[id] = job
+        self.scheduled_jobs[id] = job
         return job
 
 
@@ -72,22 +61,23 @@ class Job:
         if self._at.time < DateTime.now().time:
             self._at.tomorrow()
 
-    @property
-    def all_attributes(self):
-        return {
+    def run(self):
+        self.__call__()
+
+    def __repr__(self):
+        return repr({
             'id': self.id,
             'job': self.job.__name__,
             'is_active': self.is_active,
-            'at': ['{:02d}/{:02d}'.format(self.at.day, self.at.month), '{:02d}:{:02d}'.format(self.at.hour, self.at.minutes)],
-            'device': {'pin': self.device.pin, 'type': self.device.__class__.__name__},
+            'at': self.at,
+            'device': self.device,
             'duration': self.duration
-        }
+        })
 
     def __call__(self):
-        self.run()
-
-    def run(self):
-        if not self.is_active or not self.at.time == DateTime.now().time:
+        if not self.is_active:
+            return
+        if not self.at.time == DateTime.now().time:
             return
 
         # Execute job

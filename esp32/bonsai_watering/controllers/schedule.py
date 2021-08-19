@@ -1,8 +1,8 @@
-from bonsai_watering import scheduler
+from bonsai_watering import scheduler, jobs, devices, views
 
 def get_schedule(server, request):
     ''' GET /schedule '''
-    request.Response.ReturnOkJSON(scheduler.scheduled_jobs)
+    request.Response.ReturnOkJSON(views.to_json(scheduler.scheduled_jobs))
 
 def post_schedule(server, request):
     '''
@@ -13,13 +13,21 @@ def post_schedule(server, request):
     data = request.GetPostedJSONObject()
 
     try:
+        # Find job from list
+        job_func = jobs.get(data['job'])
+#        data['job'] = job_func
+        # Find device from list 
+        device_inst = devices.get(data['device'])
+
+        data['job'], data['device'] = job_func, device_inst
+
         job = scheduler.schedule(**data)
     except (KeyError, TypeError, SyntaxError):
         request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
     except NameError as err:
         request.Response.ReturnJSON(400, {'error': str(err)})
     else:
-        request.Response.ReturnOkJSON(job.all_attributes)
+        request.Response.ReturnOkJSON(views.to_json(job))
 
 def update_schedule(server, request, args):
     ''' PUT /schedule/<id> '''
@@ -35,7 +43,7 @@ def update_schedule(server, request, args):
     except ValueError:
         request.Response.ReturnJSON(400, {'error': 'Incorrect value'})
     else:
-        request.Response.ReturnOkJSON(job.all_attributes)
+        request.Response.ReturnOkJSON(views.to_json(job))
 
 
 def delete_schedule(server, request, args):
@@ -46,4 +54,4 @@ def delete_schedule(server, request, args):
     except (IndexError, TypeError):
         request.Response.ReturnJSON(400, {'error': 'Invalid id'})
     else:
-        request.Response.ReturnOkJSON(job)
+        request.Response.ReturnOkJSON(views.to_json(job))

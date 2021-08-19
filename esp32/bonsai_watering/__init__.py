@@ -11,11 +11,11 @@ def create_application():
     ''' main function and entry point to the package '''
 
     ''' register web routes '''
-    from bonsai_watering import controllers
+    from bonsai_watering import controllers, jobs, devices
 
-    # /pump
-    mws2.RegisterRoute(controllers.get_pump, mws2.GET, '/pump')
-    mws2.RegisterRoute(controllers.post_pump, mws2.POST, '/pump')
+    # /devices
+    mws2.RegisterRoute(controllers.get_devices, mws2.GET, '/devices')
+    mws2.RegisterRoute(controllers.post_devices, mws2.POST, '/devices/<name>')
 
     # /schedule
     mws2.RegisterRoute(controllers.get_schedule, mws2.GET, '/schedule')
@@ -31,8 +31,8 @@ def create_application():
     mws2.RegisterRoute(controllers.get_webrepl, mws2.GET, '/webrepl')
 
     ''' schedule jobs '''
-    scheduler.schedule(job='water_plants', at='07:00', device='pump', duration=20)
-    scheduler.schedule(job='water_plants', at='18:00', device='pump', duration=10)
+    scheduler.schedule(job=jobs.water_plants, at='07:00', device=devices.pump, duration=20)
+    scheduler.schedule(job=jobs.water_plants, at='18:00', device=devices.pump, duration=10)
 
     ''' set up web server'''
     server.SetEmbeddedConfig()

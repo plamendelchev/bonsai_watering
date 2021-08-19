@@ -12,6 +12,14 @@ class DateTime:
     def time(self):
         return (self.day, self.hour, self.minutes)
 
+    @property
+    def rtc(self):
+        return RTC().datetime()
+
+    @rtc.setter
+    def rtc(self, value):
+        RTC().datetime(value)
+
     @classmethod
     def now(cls):
         ''' returns a DateTime object '''
@@ -53,8 +61,5 @@ class DateTime:
 
         self.month, self.day = month, day
 
-    def __str__(self):
-        return str(self.__dict__)
-
     def __repr__(self):
-        return str(['{:02d}'.format(i) for i in self.__dict__.values()])
+        return repr(['{:02d}/{:02d}'.format(self.day, self.month), '{:02d}:{:02d}'.format(self.hour, self.minutes)])
