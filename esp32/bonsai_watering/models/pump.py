@@ -1,7 +1,8 @@
 from machine import Pin
 
 class Pump:
-    def __init__(self, pin):
+    def __init__(self, name, pin):
+        self.name = name
         self._pin = Pin(pin, Pin.OUT)
         self._pin_num = pin
 
@@ -17,9 +18,5 @@ class Pump:
     def status(self, value):
         self._pin.value(value)
 
-    @property
-    def all_attributes(self):
-        return {'pin': self.pin, 'status': self.status}
-
     def __repr__(self):
-        return str({'pin': self.pin, 'status': self.status})
+        return repr({'name': self.name, 'type': self.__class__.__name__, 'pin': self.pin, 'status': self.status})

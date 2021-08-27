@@ -1,34 +1,30 @@
-from . import DateTime
+from .datetime import DateTime
+from bonsai_watering import jobs, devices
 
 class Scheduler:
     def __init__(self):
         self.current_id = 0
-        self._scheduled_jobs = []
+        self.scheduled_jobs = []
 
-    @property
-    def scheduled_jobs(self):
-        return [job.all_attributes for job in self._scheduled_jobs]
+    def schedule(self, job, at, device, **kwargs):
+        job = Job(self.current_id, job, at, device, **kwargs)
 
-    def schedule(self,job , at, **kwargs):
-        job = Job(self.current_id, job, at, **kwargs)
-
-        self._scheduled_jobs.append(job)
+        self.scheduled_jobs.append(job)
         self.current_id += 1
 
         return job
 
     def unschedule(self, id):
-        job = self._scheduled_jobs.pop(id)
-        return(job.all_attributes)
+        job = next(job for job in self.scheduled_jobs if job.id == id)
+        self.scheduled_jobs.remove(job)
+        return job
 
     def run_scheduled(self):
-        for job in self._scheduled_jobs:
-            if job.at.time == DateTime.now().time:
-                job.run()
-                #server.Log(job, server.DEBUG)
+        for job in self.scheduled_jobs:
+            job.run()
 
     def get_job(self, id):
-        return self._scheduled_jobs[id]
+        return self.scheduled_jobs[id]
 
     def update_job(self, id, data):
         job = self.get_job(id=id)
@@ -38,16 +34,19 @@ class Scheduler:
                 raise AttributeError(attr)
             setattr(job, attr, value)
 
-        self._scheduled_jobs[id] = job
+        self.scheduled_jobs[id] = job
         return job
 
 
 class Job:
-    def __init__(self, id, job, at, **kwargs):
+    def __init__(self, id, job, at, device, is_active=True, duration=0, **kwargs):
         self.id = id
         self.job = job
-        self.args = kwargs
         self.at = at
+        self.device = device
+        self.is_active = is_active
+        self.duration = duration
+        self.args = kwargs
 
     @property
     def at(self):
@@ -56,32 +55,34 @@ class Job:
     @at.setter
     def at(self, value):
         # parse `value` ('12:00') into a datetime valid format
-        dt_at = DateTime.parse(value)
+        self._at = DateTime.parse(value)
 
         # check if job should be rescheduled for tomorrow
-        if dt_at.time < DateTime.now().time:
-            self._at = dt_at
+        if self._at.time < DateTime.now().time:
             self._at.tomorrow()
-        else:
-            self._at = dt_at
-
-    @property
-    def all_attributes(self):
-        return {
-            'id': self.id,
-            'job': self.job.__name__,
-            'at': ['{:02d}/{:02d}'.format(self.at.day, self.at.month), '{:02d}:{:02d}'.format(self.at.hour, self.at.minutes)],
-            #'args': {'pump': self.args['pump'].all_attributes, 'duration': self.args['duration']}  ## THIS IS NOT OK
-            'pump': self.args['pump'].pin,
-            'duration': self.args['duration']
-        }
-
-    def __call__(self):
-        self.run()
 
     def run(self):
+        self.__call__()
+
+    def __repr__(self):
+        return repr({
+            'id': self.id,
+            'job': self.job.__name__,
+            'is_active': self.is_active,
+            'at': self.at,
+            'device': self.device,
+            'duration': self.duration
+        })
+
+    def __call__(self):
+        if not self.is_active:
+            return
+        if not self.at.time == DateTime.now().time:
+            return
+
         # Execute job
-        self.job(**self.args)
+        #self.job(**self.args)
+        self.job(self.device, self.duration, **self.args)
 
         # Update Day to tomorrow
         self.at.tomorrow()

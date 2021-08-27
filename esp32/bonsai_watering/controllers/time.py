@@ -1,16 +1,16 @@
 import machine
-from bonsai_watering import scheduler
+from bonsai_watering import models
 
 rtc = machine.RTC()
 
 def get_time(server, request):
-    request.Response.ReturnOkJSON({'datetime': rtc.datetime()})
+    request.Response.ReturnOkJSON(models.DateTime.now().rtc)
 
 def post_time(server, request):
-    data = request.GetPostedJSONObject()
     try:
-        rtc.datetime(tuple(data))
+        data = request.GetPostedJSONObject()
+        models.DateTime.rtc = tuple(data)
     except ValueError:
         request.Response.ReturnJSON(400, {'error': 'Incorrect datetime format'})
-        return
-    request.Response.ReturnOkJSON({'datetime': rtc.datetime()})
+    else:
+        request.Response.ReturnOkJSON(models.DateTime.now().rtc)

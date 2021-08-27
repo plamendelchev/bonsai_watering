@@ -1,30 +1,33 @@
-from bonsai_watering import pump, scheduler
-from bonsai_watering.jobs import water_plants
+from bonsai_watering import scheduler, jobs, devices, views
 
 def get_schedule(server, request):
     ''' GET /schedule '''
-    request.Response.ReturnOkJSON(scheduler.scheduled_jobs)
+    request.Response.ReturnOkJSON(views.to_json(scheduler.scheduled_jobs))
 
 def post_schedule(server, request):
     '''
     POST /schedule
-    expected json data -> {"job": "water_plants", "at": "12:00", "pump": "pump", "duration": 10}
-
-    TODO -> Change ("pump": "pump") to ("pump": 23) // reference by pin num, instead of instance name
+    expected json data -> {"job": "water_plants", "at": "12:00", "device": "pump", "duration": 10}
     '''
 
     data = request.GetPostedJSONObject()
 
     try:
-        job = scheduler.schedule(job=eval(data['job']), at=data['at'], pump=eval(data['pump']), duration=data['duration'])
-    except (KeyError, TypeError):
+        # Find job from list
+        job_func = jobs.get(data['job'])
+#        data['job'] = job_func
+        # Find device from list 
+        device_inst = devices.get(data['device'])
+
+        data['job'], data['device'] = job_func, device_inst
+
+        job = scheduler.schedule(**data)
+    except (KeyError, TypeError, SyntaxError):
         request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
     except NameError as err:
         request.Response.ReturnJSON(400, {'error': str(err)})
     else:
-        request.Response.ReturnOkJSON(job.all_attributes)
-
-    #return
+        request.Response.ReturnOkJSON(views.to_json(job))
 
 def update_schedule(server, request, args):
     ''' PUT /schedule/<id> '''
@@ -40,7 +43,7 @@ def update_schedule(server, request, args):
     except ValueError:
         request.Response.ReturnJSON(400, {'error': 'Incorrect value'})
     else:
-        request.Response.ReturnOkJSON(job.all_attributes)
+        request.Response.ReturnOkJSON(views.to_json(job))
 
 
 def delete_schedule(server, request, args):
@@ -51,6 +54,4 @@ def delete_schedule(server, request, args):
     except (IndexError, TypeError):
         request.Response.ReturnJSON(400, {'error': 'Invalid id'})
     else:
-        request.Response.ReturnOkJSON(job)
-
-    #return
+        request.Response.ReturnOkJSON(views.to_json(job))

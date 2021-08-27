@@ -24,7 +24,7 @@ RUN mkdir /esp/ && \
     components/mbedtls/mbedtls \
     components/bt/controller/lib_esp32 \
     components/bt/controller/lib_esp32c3_family && \
-  /esp/esp-idf/install.sh
+  /esp/esp-idf/install.sh esp32
 
 # clone micropython
 RUN source /esp/esp-idf/export.sh && \
