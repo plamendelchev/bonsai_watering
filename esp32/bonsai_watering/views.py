@@ -1,5 +1,6 @@
 import gc
+import ujson
 
 def to_json(item):
     gc.collect()
-    return eval(repr(item))
+    return ujson.dumps(eval(repr(item)))

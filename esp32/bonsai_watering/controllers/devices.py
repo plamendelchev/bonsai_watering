@@ -1,22 +1,23 @@
+import ujson
 from bonsai_watering import devices, views
 
-def get_devices(server, request):
-    ''' GET /devices '''
-    request.Response.ReturnOkJSON(views.to_json(devices.devices))
+def get_devices():
+    ''' bonsai_watering/status/devices '''
+    return views.to_json(devices.devices)
 
-def post_devices(server, request, args):
+def set_devices(message):
     '''
-    POST /devices/<name>
-    expected json data -> {"status": [01]}
+    bonsai_watering/set/devices
+    expected json data -> {"name": "pump", "status": [01]}
     '''
 
     try:
-        data = request.GetPostedJSONObject()
-        device = devices.get(args['name'])
+        data = ujson.loads(message.decode('utf-8'))
+        device = devices.get(data['name'])
         device.status = int(data['status'])
     except (TypeError, KeyError):
-        request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
+        print('Incorrect post data')
     except StopIteration:
-        request.Response.ReturnJSON(400, {'error': 'Incorrect device name'})
+        print('Incorrect device name')
     else:
-        request.Response.ReturnOkJSON(views.to_json(device))
+        print('OK')
