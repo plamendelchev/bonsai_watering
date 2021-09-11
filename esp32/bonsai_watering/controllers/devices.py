@@ -1,23 +1,22 @@
 import ujson
+
 from bonsai_watering import devices, views
 
 def get_devices():
     ''' bonsai_watering/status/devices '''
     return views.to_json(devices.devices)
 
-def set_devices(message):
+def set_devices(topic, message, response_topic):
     '''
-    bonsai_watering/set/devices
-    expected json data -> {"name": "pump", "status": [01]}
+    bonsai_watering/set/devices/<name>
+    expected json data -> {"status": [01]}
     '''
-
+    device_name = topic.split('/')[-1]
     try:
         data = ujson.loads(message.decode('utf-8'))
-        device = devices.get(data['name'])
+        device = devices.get(device_name)
         device.status = int(data['status'])
     except (TypeError, KeyError):
-        print('Incorrect post data')
-    except StopIteration:
-        print('Incorrect device name')
+        queue.append(data='Incorrect data', topic=response_topic)
     else:
-        print('OK')
+        queue.append(data=views.to_json(device), topic=response_topic)
