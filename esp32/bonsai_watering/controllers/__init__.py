@@ -5,7 +5,7 @@ from .time import *
 from .schedule import *
 from .update import *
 
-Route = namedtuple('Route', ['controller', 'topic'])
+Route = namedtuple('Route', ['controller', 'topic', 'response_topic'])
 routes = []
 
 def register_route(controller, topic, response_topic):

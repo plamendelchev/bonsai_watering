@@ -1,10 +1,4 @@
 import time
-
-print('Sleeping a bit')
-time.sleep(1)
-print('Done Sleeping')
-
-
 import mqtt_as
 import uasyncio as asyncio
 
@@ -22,7 +16,7 @@ bonsai_watering/status/devices
 bonsai_watering/get/{devices,schedule,time}
 
 * Change requests
-`bonsai_watering/set/devices/<device_name>` '{"status": 1}' -> It publishes a response to `bonsai_watering/status/devices/<device_name>`
+DONE `bonsai_watering/set/devices/<device_name>` '{"status": 1}' -> responds to `bonsai_watering/status/devices/<device_name>`
 bonsai_watering/set/schedule/<id> '{"is_active": 0}'
 
 * Create requests
@@ -38,9 +32,6 @@ def callback(topic, msg, retained):
     controllers.call(topic, msg)
 
 async def conn_han(client):
-#    await client.subscribe('bonsai_watering/set/#', 1)
-#    await client.subscribe('bonsai_watering/new/#', 1)
-#    await client.subscribe('bonsai_watering/delete/#', 1)
     topics = [route.topic for route in controllers.routes]
     for topic in topics:
         await client.subscribe(topic, 1)
@@ -58,7 +49,7 @@ async def main(client):
         else:
             await client.publish(message.topic, message.data, qos=1)
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(1)
 
 from bonsai_watering import config, models
 
@@ -79,13 +70,10 @@ def start_application():
     from bonsai_watering import controllers
 
     # /devices
-    controllers.register_route(controllers.set_devices,
+    controllers.register_route(controller=controllers.set_devices,
                                topic=b'bonsai_watering/set/devices/pump',
                                response_topic=b'bonsai_watering/status/devices/pump')
 
-    controllers.register_route(controllers.set_devices,
-                               topic=b'bonsai_watering/set/devices/pump2',
-                               response_topic=b'bonsai_watering/status/devices/pump2')
 #    mws2.RegisterRoute(controllers.get_devices, mws2.GET, '/devices')
 #    mws2.RegisterRoute(controllers.post_devices, mws2.POST, '/devices/<name>')
 
