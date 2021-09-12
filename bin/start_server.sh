@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-rshell repl '~ import bonsai_watering ~ bonsai_watering.create_application()'
+#rshell repl '~ import bonsai_watering ~ bonsai_watering.start_application()'
+rshell repl 'import main'
