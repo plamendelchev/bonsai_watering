@@ -5,3 +5,4 @@ __pycache__
 TODO
 *.swp
 *.swo
+tests
