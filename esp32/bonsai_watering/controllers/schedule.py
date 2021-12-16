@@ -1,33 +1,25 @@
-from bonsai_watering import scheduler, jobs, devices, views
+from bonsai_watering import scheduler, jobs, devices, views, controllers, queue
 
 def get_schedule(server, request):
     ''' GET /schedule '''
     request.Response.ReturnOkJSON(views.to_json(scheduler.scheduled_jobs))
 
-def post_schedule(server, request):
+def set_schedule(topic, message, response_topic=None):
     '''
-    POST /schedule
+    bonsai_watering/set/schedule/<id>
     expected json data -> {"job": "water_plants", "at": "12:00", "device": "pump", "duration": 10}
     '''
 
-    data = request.GetPostedJSONObject()
-
+    schedule_id = controllers.get_argument(topic)
     try:
-        # Find job from list
+        raw_data, data = controllers.parse(message)
         job_func = jobs.get(data['job'])
-#        data['job'] = job_func
-        # Find device from list 
-        device_inst = devices.get(data['device'])
-
-        data['job'], data['device'] = job_func, device_inst
-
+        device = devices.get(data['device'])
+        data['job'], data['service'] = job_func, device
         job = scheduler.schedule(**data)
-    except (KeyError, TypeError, SyntaxError):
-        request.Response.ReturnJSON(400, {'error': 'Incorrect post data'})
-    except NameError as err:
-        request.Response.ReturnJSON(400, {'error': str(err)})
-    else:
-        request.Response.ReturnOkJSON(views.to_json(job))
+    except (KeyError, TypeError, SyntaxError, NameError):
+        data = {'error': 'Incorrect data `{}`'.format(raw_data)}
+        queue.append(data=views.to_json(data), topic='bonsai_watering/errors')
 
 def update_schedule(server, request, args):
     ''' PUT /schedule/<id> '''
