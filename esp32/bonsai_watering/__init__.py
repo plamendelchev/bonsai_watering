@@ -6,7 +6,7 @@ from bonsai_watering import models
 server = mws2.MicroWebSrv2()
 scheduler = models.Scheduler()
 
-def create_application():
+def start_application():
     ''' main function and entry point to the package '''
 
     ''' register web routes '''
@@ -26,15 +26,14 @@ def create_application():
     mws2.RegisterRoute(controllers.get_time, mws2.GET, '/time')
     mws2.RegisterRoute(controllers.post_time, mws2.POST, '/time')
 
-    # /webrepl
-    mws2.RegisterRoute(controllers.get_webrepl, mws2.GET, '/webrepl')
+    # /stats
+    mws2.RegisterRoute(controllers.get_stats, mws2.GET, '/stats')
 
     ''' schedule jobs '''
-    scheduler.schedule(job=jobs.water_plants, at='07:00', device=devices.pump, duration=20)
-    scheduler.schedule(job=jobs.water_plants, at='18:00', device=devices.pump, duration=10)
+    scheduler.schedule(job=jobs.water_plants, at='08:00', device=devices.pump, duration=6)
 
     ''' set up web server'''
-    server.SetEmbeddedConfig()
+    server.SetPacoConfig()
     server.StartManaged()
 
     ''' main program loop until keyboard interrupt '''

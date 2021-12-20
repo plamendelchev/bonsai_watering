@@ -1,4 +1,4 @@
-from .datetime import DateTime
+from datetime import DateTime
 from bonsai_watering import jobs, devices
 
 class Scheduler:

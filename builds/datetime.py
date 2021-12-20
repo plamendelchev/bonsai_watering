@@ -7,6 +7,7 @@ class DateTime:
         self.hour = hour
         self.minutes = minutes
         self.seconds = seconds
+        self._rtc = RTC()
 
     @property
     def time(self):
@@ -14,17 +15,18 @@ class DateTime:
 
     @property
     def rtc(self):
-        return RTC().datetime()
+        return self._rtc.datetime()
 
     @rtc.setter
     def rtc(self, value):
-        RTC().datetime(value)
+        self._rtc.datetime(value)
 
     @classmethod
     def now(cls):
         ''' returns a DateTime object '''
 
-        now = list(RTC().datetime())
+        #now = list(RTC().datetime())
+        now = cls.rtc()
         for i in sorted((0, 3, 7), reverse=True): # delete unnecessary stuff
             del now[i]
 
