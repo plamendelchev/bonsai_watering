@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  mosquitto:
+    build: ./mosquitto
+    ports: 
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - mosquitto-config:/mosquitto/config
+  questdb:
+    image: questdb/questdb
+    ports:
+      - "8812:8812"
+      - "9000:9000"
+      - "9009:9009"
+    volumes:
+      - questdb-db:/root/.questdb/db
+    depends_on:
+      - mosquitto
+  kala:
+    build: ./kala
+    ports:
+      - "8000:8000"
+    env_file: ./kala/.env
+    volumes:
+      - kala-jobs:/jobs
+      - kala-db:/kala
+    depends_on:
+      - questdb
+  telegraf:
+    image: telegraf:alpine
+    env_file: ./telegraf/.env
+    volumes:
+      - ./telegraf/config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - kala
+
+volumes:
+  mosquitto-config:
+  questdb-db:
+  kala-jobs:
+  kala-db:

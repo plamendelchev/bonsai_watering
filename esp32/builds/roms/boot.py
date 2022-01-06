@@ -29,7 +29,7 @@ def set_ntp_time(timezone=0):
     except OSError:
         print('Unable to set time. ')
 
-home = {'ssid': '', 'password': ''}
+home = {'ssid': 'gosho', 'password': 'P1am3n4o97'}
 
 do_connect(**home)
 set_ntp_time(timezone=3)
