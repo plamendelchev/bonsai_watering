@@ -23,7 +23,7 @@ def start_application():
         devices.change_status(topic, message)
 
     async def subscribe_to_topics(client):
-        await client.subscribe(b'bonsai_watering/set/plants/+', 1)
+        await client.subscribe(b'bonsai/set/plants/+', 1)
 
     async def publish_status(client, devices, interval=15):
         while True:
@@ -54,4 +54,7 @@ def start_application():
     devices.register_device(type=devices.BOARD_STATS, topic='bonsai/status/board')
 
     ''' main program loop '''
-    asyncio.run(main(mqtt_client, devices=devices.devices, board_devices=devices.board_devices))
+    try:
+        asyncio.run(main(mqtt_client, devices=devices.devices, board_devices=devices.board_devices))
+    except (KeyboardInterrupt, SystemExit):
+        pass

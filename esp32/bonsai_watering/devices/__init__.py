@@ -1,4 +1,6 @@
-from .devices import Plant, Common, BoardStats
+from .plant import Plant
+from .common import Common
+from .board_stats import BoardStats
 
 PLANT='Plant'
 COMMON='Common'
@@ -23,5 +25,6 @@ def change_status(topic, message):
 
     for device in devices:
         if device.topic.endswith(device_name):
+            print('Changing status of {}'.format(device_name))
             device.status = message.decode()
             break
