@@ -1,5 +1,5 @@
-esp32/boot.py
-esp32/boot_sample.py
+esp32/src/boot.py
+esp32/src/boot_sample.py
 mosquitto/config/passwd
 mosquitto/passwd
 __pycache__
