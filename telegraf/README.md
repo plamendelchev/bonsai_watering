@@ -22,7 +22,7 @@ bonsai/status/plants/elk -> {"pump": 0, "sprayer": 0, "moisture": 20, "ts": "164
 bonsai/status/plants/X -> ...
 ...
 
-bonsai/status/board -> {"temp": 40, "mem_alloc": 100, "mem_total": 300, "ts":"1640786943"}
+bonsai/status/board -> {"raw_temp": 40, "mem_alloc": 100, "mem_free": 200, "mem_total": 300, "ts":"1640786943"}
 ```
 
 - Influx LP Output
@@ -33,7 +33,7 @@ bonsai_plants,name=elk,query=status pump=false,sprayer=false,moisture=20i 164078
 bonsai,name=plant-X ...
 ...
 
-bonsai_board,query=status raw_temp=20i,mem_alloc=200i,mem_total=300i 1640786943000000000
+bonsai_board,query=status raw_temp=20i,mem_alloc=200i,mem_free=200i,mem_total=400i 1640786943000000000
 ```
 
 ## Debug Telegraf
