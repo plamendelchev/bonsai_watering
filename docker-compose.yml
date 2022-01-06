@@ -5,9 +5,8 @@ services:
     build: ./mosquitto
     ports: 
       - "1883:1883"
-      - "9001:9001"
     volumes:
-      - mosquitto-config:/mosquitto/config
+      - ./mosquitto/config:/mosquitto/config:ro
   questdb:
     image: questdb/questdb
     ports:
@@ -37,7 +36,6 @@ services:
       - kala
 
 volumes:
-  mosquitto-config:
   questdb-db:
   kala-jobs:
   kala-db:
