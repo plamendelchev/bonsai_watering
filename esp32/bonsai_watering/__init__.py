@@ -1,7 +1,7 @@
 import uasyncio as asyncio
 import mqtt_as
 
-from bonsai_watering import devices
+from bonsai_watering import devices, time
 
 '''
 mqtt topics
@@ -16,6 +16,7 @@ bonsai/status/board -> {"raw_temp": 40, "mem_alloc": 100, "mem_free": 200, "mem_
 bonsai_watering/set/plants/elk -> {"pump": 1}
 
 '''
+
 
 def start_application():
     def callback(topic, message, retained):
@@ -34,6 +35,8 @@ def start_application():
 
     async def main(client, devices, board_devices):
         await client.connect()
+
+        time.set_ntp_time(tz=+2)
 
         await asyncio.gather(
             publish_status(client, devices, interval=30),
