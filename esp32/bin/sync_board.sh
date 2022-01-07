@@ -2,4 +2,4 @@
 
 PWD="$({ cd "$(dirname ${BASH_SOURCE[0]})"; cd ../ ; } &> /dev/null && pwd)"
 
-rshell rsync source/ /pyboard/
+rshell rsync src/ /pyboard/
