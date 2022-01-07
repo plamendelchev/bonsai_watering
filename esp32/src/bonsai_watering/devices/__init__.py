@@ -25,6 +25,6 @@ def change_status(topic, message):
 
     for device in devices:
         if device.topic.endswith(device_name):
-            print('Changing status of {}'.format(device_name))
+            print(f'Changing status of {device_name}')
             device.status = message.decode()
             break

@@ -12,7 +12,7 @@ class BoardStats(BaseDevice):
 
     def temp(self):
         temp = (esp32.raw_temperature() - 32) / 1.8
-        return '{:.1f}'.format(temp)
+        return f'{temp:.1f}'
 
     def memory(self):
         ''' return values in KB '''
@@ -23,6 +23,7 @@ class BoardStats(BaseDevice):
     def storage(self):
         ''' returns values in MB '''
         storage = os.statvfs('/')
-        available = float('{:.3f}'.format((storage[0] * storage[3]) / 1048576))
-        total = float('{:.3f}'.format((storage[0] * storage[2]) / 1048576))
-        return used, available, total - available
+        available = (storage[0] * storage[3]) / 1048576
+        total = (storage[0] * storage[2]) / 1048576
+        used = total - available
+        return f'{used:.3f}', f'{available:.3f}', f'{total:.3f}'
