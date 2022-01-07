@@ -2,8 +2,9 @@ esp32/src/boot.py
 esp32/src/boot_sample.py
 mosquitto/config/passwd
 mosquitto/passwd
+tests
 __pycache__
 TODO
 *.swp
 *.swo
-tests
+*.bin
