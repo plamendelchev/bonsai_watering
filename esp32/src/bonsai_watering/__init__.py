@@ -1,6 +1,7 @@
-import uasyncio as asyncio
 import mqtt_as
+import uasyncio as asyncio
 
+from machine import WDT
 from bonsai_watering import devices, time
 
 '''
@@ -18,6 +19,10 @@ bonsai_watering/set/plants/elk -> {"pump": 1}
 '''
 
 
+''' define watchdog timer '''
+wdt = WDT(timeout=90000) # 90 seconds
+
+''' main function '''
 def start_application():
     def callback(topic, message, retained):
         print('Received', (topic, message, retained))
@@ -28,10 +33,10 @@ def start_application():
 
     async def publish_status(client, devices, interval=15):
         while True:
-            async for device in devices:
+            for device in devices:
                 await client.publish(device.topic, device.status, qos=1)
-
             await asyncio.sleep(interval)
+            wdt.feed()
 
     async def main(client):
         await client.connect()
