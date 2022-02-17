@@ -28,19 +28,19 @@ def start_application():
 
     async def publish_status(client, devices, interval=15):
         while True:
-            for device in devices:
+            async for device in devices:
                 await client.publish(device.topic, device.status, qos=1)
 
             await asyncio.sleep(interval)
 
-    async def main(client, devices, board_devices):
+    async def main(client):
         await client.connect()
 
         time.set_ntp_time(tz=+2)
 
         await asyncio.gather(
-            publish_status(client, devices, interval=30),
-            publish_status(client, board_devices, interval=60)
+            publish_status(client, devices.devices, interval=30),
+            publish_status(client, devices.board_devices, interval=60)
         )
 
     ''' mqtt config '''
@@ -58,6 +58,6 @@ def start_application():
 
     ''' main program loop '''
     try:
-        asyncio.run(main(mqtt_client, devices=devices.devices, board_devices=devices.board_devices))
+        asyncio.run(main(mqtt_client))
     except (KeyboardInterrupt, SystemExit):
         pass
