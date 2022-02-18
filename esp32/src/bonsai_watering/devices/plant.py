@@ -6,7 +6,7 @@ class Plant(BaseDevice):
     def __init__(self, topic, pins):
         super().__init__(topic)
 
-        self.pump = Signal(pins['pump'], Pin.OUT)
+        self._pump = Signal(pins['pump'], Pin.OUT)
         #        self.sprayer = Signal(pins['spayer'], Pin.OUT)
         #        self.moisture = self._setup_adc(pin=pins['moisture'])
 
@@ -17,8 +17,16 @@ class Plant(BaseDevice):
         return adc
 
     @property
+    def pump(self):
+        return self._pump.value()
+
+    @pump.setter
+    def pump(self, value):
+        self._pump.value(int(value))
+
+    @property
     def status(self):
-        return self.to_json({'pump': self.pump.value(), 'sprayer': 0, 'moisture': 0, 'ts': self.time()})
+        return self.to_json({'pump': self.pump, 'sprayer': 0, 'moisture': 0, 'ts': self.time()})
 
     '''
     bonsai/set/plants/<name>
@@ -35,7 +43,7 @@ class Plant(BaseDevice):
         else:
             for key, value in data.items():
                 try:
-                    attr = getattr(self, key)
+                    attr = getattr(self, f'_{key}')
                     attr.value(int(value))
                 except (AttributeError, ValueError):
                     continue

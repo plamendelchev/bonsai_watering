@@ -58,7 +58,7 @@ def start_application():
 
     ''' register devices '''
     devices.register_device(type=devices.PLANT, topic='bonsai/status/plants/default', pins={'pump': 23, 'sprayer': 0, 'moisture': 0})
-    devices.register_device(type=devices.COMMON, topic='bonsai/status/common', pins={'dht22': 22 , 'sunlight': 0, 'reservoir': 0})
+    devices.register_device(type=devices.COMMON, topic='bonsai/status/common', pins={'dht22': 22 , 'light': (5, 4), 'reservoir': 0})
     devices.register_device(type=devices.BOARD_STATS, topic='bonsai/status/board')
 
     ''' main program loop '''
