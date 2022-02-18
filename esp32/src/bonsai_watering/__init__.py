@@ -57,8 +57,8 @@ def start_application():
     mqtt_client.DEBUG = True
 
     ''' register devices '''
-    devices.register_device(type=devices.PLANT, topic='bonsai/status/plants/default', pins={'pump': 23, 'sprayer': 24, 'moisture': 25})
-    devices.register_device(type=devices.COMMON, topic='bonsai/status/common', pins={'dht22': 20 , 'sunlight': 21, 'reservoir': 22})
+    devices.register_device(type=devices.PLANT, topic='bonsai/status/plants/default', pins={'pump': 23, 'sprayer': 0, 'moisture': 0})
+    devices.register_device(type=devices.COMMON, topic='bonsai/status/common', pins={'dht22': 22 , 'sunlight': 0, 'reservoir': 0})
     devices.register_device(type=devices.BOARD_STATS, topic='bonsai/status/board')
 
     ''' main program loop '''

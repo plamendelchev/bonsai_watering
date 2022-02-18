@@ -1,5 +1,5 @@
 import json
-from machine import Signal, Pin, ADC #, dht
+from machine import Signal, Pin, ADC
 from .base_device import BaseDevice
 
 class Plant(BaseDevice):
