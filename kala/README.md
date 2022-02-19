@@ -9,7 +9,7 @@ curl http://127.0.0.1:8000/api/v1/job/ -d \
   "epsilon": "PT5S",
   "command": "mqtt_water_plants.sh -t 'bonsai/set/plants/default' -d 5",
   "name": "water_plants",
-  "schedule": "R/2021-12-23T10:00:00+02:00/PT1D"
+  "schedule": "R/2021-12-23T10:00:00+02:00/P1D"
 }'
 ```
 Useful: `date --iso-8601=seconds`
